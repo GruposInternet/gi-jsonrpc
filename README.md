@@ -3,14 +3,14 @@ JSON Rpc Client library for Javascript
 
 Exemple:
 
-Syncronous:
+# Syncronous:
 
 var service = GI.jsonrpc( { url: '<endpoint url>' });
 
 var result = service.method(param1, param2);
 
 
-Asyncronous:
+# Asyncronous:
 
 var service = GI.jsonrpc( { url: '<endpoint url>', async: true });
 
