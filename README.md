@@ -1,6 +1,7 @@
 # GI - JSON Rpc Client
 
 JSON Rpc Client library for Javascript
+See: http://json-rpc.org/
 
 Exemple:
 
