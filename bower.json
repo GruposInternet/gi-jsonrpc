@@ -27,7 +27,7 @@
   "_release": "0.1",
   "_resolution": {
     "type": "version",
-    "tag": "0.1",
+    "tag": "0.1"
   },
   "_source": "git://github.com/GruposInternet/gi-jsonrpc",
   "_target": "~0.1",
