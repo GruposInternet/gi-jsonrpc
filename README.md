@@ -1,4 +1,5 @@
-# gi-jsonrpc
+# GI - JSON Rpc Client
+
 JSON Rpc Client library for Javascript
 
 Exemple:
