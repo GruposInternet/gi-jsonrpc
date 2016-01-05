@@ -6,14 +6,14 @@ Exemple:
 
 # Syncronous:
 
-var service = GI.jsonrpc( { url: '<endpoint url>' });
+var service = GI.jsonrpc( { url: '&lt;endpoint url&gt;' });
 
 var result = service.method(param1, param2);
 
 
 # Asyncronous:
 
-var service = GI.jsonrpc( { url: '<endpoint url>', async: true });
+var service = GI.jsonrpc( { url: '&lt;endpoint url&gt;', async: true });
 
 service.method(param1, param2, function( result )
   {
