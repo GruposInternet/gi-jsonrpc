@@ -7,7 +7,7 @@ Exemple:
 
 # Syncronous:
 
-<pre>
+```javascript
 var service = GI.jsonrpc( { url: '&lt;endpoint url&gt;' });
 var result = service.method(param1, param2);
 </pre>
@@ -21,4 +21,4 @@ service.method(param1, param2, function( result )
     console.log(result).
   }
 );
-</pre>
+```
