@@ -3,6 +3,8 @@
 JSON Rpc Client library for Javascript
 See: http://json-rpc.org/
 
+You can use Zend_Json_Server as server for your classes: http://framework.zend.com/manual/current/en/modules/zend.json.server.html
+
 Exemple:
 
 # Syncronous:
