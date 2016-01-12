@@ -207,6 +207,7 @@ GI.jsonrpc = function(options) {
 	                var successCallback = false;
 					var exceptionHandler = false;
 	                var errorCallback = false;
+	                var exceptionOcurred = false;
 	
 	                /* If we're doing an async call, handle callbacks
 	                 * if we happen to have them.
@@ -287,9 +288,11 @@ GI.jsonrpc = function(options) {
 							
 							if(typeof exceptionHandler == 'function') {
 								exceptionHandler(reply);
+								exceptionOcurred = true;
 								return;
 							} else if(typeof self.options.exceptionHandler == 'function') {
 	                            self.options.exceptionHandler(reply);
+	                            exceptionOcurred = true;
 	                            return;
 	                        }
 	                    } else {
@@ -310,6 +313,12 @@ GI.jsonrpc = function(options) {
 	                if(self.options.async) {
 	                    return id;
 	                } else {
+	                	if (exceptionOcurred)
+	                	{
+							reply = null;
+							throw reply;
+	                	}
+	                	
 	                    return reply;
 	                }
 	            };
