@@ -26,7 +26,7 @@ service.method(param1, param2, function( result )
 ```
 
 
- # USAGE
+# USAGE
  
  ```var json_client = GI.jsonrpc(options)```
  
@@ -88,7 +88,8 @@ service.method(param1, param2, function( result )
                          the $.ajax call to permit additional HTTP headers.
  
  </pre>
- # SPECIAL NOTES ABOUT ASYNC MODE:
+
+# SPECIAL NOTES ABOUT ASYNC MODE:
  
   If the client is in async mode (async : true, or use setAsync method)  you can pass an additional argument to your methods that contains the an array of success / failure /exception handler callbacks.  For ex:
   
