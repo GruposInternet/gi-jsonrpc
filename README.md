@@ -34,6 +34,7 @@ service.method(param1, param2, function( result )
   by the GI JSON RPC server.  Options is an object which may contain the
   following parameters:
  
+ <pre>
   url                  - The URL of the JSON-RPC server.
   smd                  - This is a way to define the available class
                          structure without fetching it from the RPC server.
@@ -76,11 +77,11 @@ service.method(param1, param2, function( result )
   headers              - A javascript object that is passed straight to
                          the $.ajax call to permit additional HTTP headers.
  
+ </pre>
  # SPECIAL NOTES ABOUT ASYNC MODE:
  
-  If the client is in async mode (async : true, or use setAsync method)
-  you can pass an additional argument to your methods that contains the
-  an array of success / failure /exception handler callbacks.  For ex:
+  If the client is in async mode (async : true, or use setAsync method)  you can pass an additional argument to your methods that contains the an array of success / failure /exception handler callbacks.  For ex:
+  
  ```
   var json_client = GI.jsonrpc({url:...., async:true });
  
@@ -89,9 +90,7 @@ service.method(param1, param2, function( result )
                        exceptionHandler: function() { ... }
   });
  ```
-  These callback methods are called IN ADDITION to the success/error methods
-  if you set them.  These callbacks receive the same variables passsed to them
-  as the default callbacks do.
  
-  ALSO: Async calls return the 'sequence ID' for the call, which can be
-  matched to the ID passed to success / error handlers.
+  These callback methods are called IN ADDITION to the success/error methods if you set them.  These callbacks receive the same variables passsed to them as the default callbacks do.
+ 
+  ALSO: Async calls return the 'sequence ID' for the call, which can be matched to the ID passed to success / error handlers. 
