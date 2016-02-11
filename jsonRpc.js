@@ -77,6 +77,8 @@
  *                        If this is NOT set, 'error' object will be returned
  *                        on.  In both cases, error object will be a
  *                        GI.GI_Json_Exception
+ * postProcessing		- Function to process results after returns                      
+ * preProcessing		- Function to process arguments before method execution
  * headers              - A javascript object that is passed straight to
  *                        the $.ajax call to permit additional HTTP headers.
  *
@@ -146,6 +148,8 @@ GI.jsonrpc = function(options) {
                 asyncError: function() { },
                 smd: null,
                 exceptionHandler: null,
+                postProcessing: null,
+                preProcessing: null,
                 headers: { }
         	},
         	options
@@ -197,8 +201,14 @@ GI.jsonrpc = function(options) {
 	                var params = new Array();
 	                for(var i = 0; i < arguments.length; i++){
 	                	var obParam = arguments[i];
-	                	
-	                	params.push(obParam);
+	                	if (typeof self.options.preProcessing == 'function')
+	                	{	                		
+	                		params.push(self.options.preProcessing(obParam));
+	                	}
+	                	else
+	                	{
+	                		params.push(obParam);	
+	                	}
 	                }
 	
 	                var id = (self.sequence++);
@@ -302,10 +312,24 @@ GI.jsonrpc = function(options) {
 	                    if(self.options.async) 
 	                    {
 	                        if(typeof successCallback == 'function') {
-	                            successCallback(reply,id,key);
+	                        	if (typeof self.options.postProcessing == 'function')
+	                        	{
+	                        		successCallback(self.options.postProcessing(reply),id,key);
+	                        	}
+	                        	else
+	                        	{	                       
+	                        		successCallback(reply,id,key);
+	                        	}
 	                        }
-	
-	                        self.options.success(reply,id,key);
+                        	if (typeof self.options.postProcessing == 'function')
+                        	{
+                        		self.options.success(self.options.postProcessing(reply),id,key);
+                        	}
+                        	else
+                        	{
+                        		self.options.success(reply,id,key);
+                        	}
+                        	
 	                    }
 	            	};
 	            	r.send(JSON.stringify(tosend));
@@ -318,8 +342,14 @@ GI.jsonrpc = function(options) {
 							reply = null;
 							throw reply;
 	                	}
-	                	
-	                    return reply;
+	                	if (typeof self.options.postProcessing == 'function')
+                    	{
+                    		return self.options.postProcessing(reply);
+                    	}
+                    	else
+                    	{
+                    		return reply;
+                    	}
 	                }
 	            };
 	            return new_method;
@@ -351,7 +381,7 @@ GI.jsonrpc = function(options) {
             }
         };
         
-        console.log(self);
+        //console.log(self);
 
         /* Do an ajax request to the server and build our object.
          *
