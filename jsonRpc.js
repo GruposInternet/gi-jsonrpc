@@ -456,6 +456,6 @@ GI.jsonrpc = function(options)
         }
 
         return this;
-}
-)(options);
+	}
+	)(options);
 };
