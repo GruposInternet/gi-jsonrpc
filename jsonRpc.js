@@ -102,8 +102,9 @@
  * ALSO: Async calls return the 'sequence ID' for the call, which can be
  * matched to the ID passed to success / error handlers.
  */
-if(typeof GI == 'undefined'){
-    GI = { };
+if(typeof GI == 'undefined')
+{
+    var GI = { };
 }
 /*
  * In case of error, an instance of this class is returned to the caller
