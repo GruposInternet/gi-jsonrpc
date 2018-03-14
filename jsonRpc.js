@@ -222,7 +222,7 @@ GI.jsonrpc = function(options)
 		                var reply = [];
 		
 		                var successCallback = false;
-				var exceptionHandler = false;
+						var exceptionHandler = false;
 		                var errorCallback = false;
 		                var exceptionOcurred = false;
 		
@@ -233,38 +233,38 @@ GI.jsonrpc = function(options)
 		                {
 		                	if(typeof params[params.length-1] == 'object') 
 		                	{
-		                        	var potentialCallbacks = params[params.length-1];
-		                        
-		                        	// For backwards compatibility with Mike's
-		                        	// patch, but support more consistent
-		                        	// callback hook names
-		                        	if(typeof potentialCallbacks.cb == 'function') 
-		                        	{ 
-		                            		successCallback = potentialCallbacks.cb;
-		                        	} 
-		                        	else if( typeof potentialCallbacks.success == 'function') 
-		                        	{
-		                            		successCallback = potentialCallbacks.success;
-		                        	}
-		                        
-		                        	if(typeof potentialCallbacks.ex == 'function') 
-		                        	{
-		                            		exceptionHandler = potentialCallbacks.ex;
-		                        	} 
-		                        	else if(typeof potentialCallbacks.exceptionHandler == 'function') 
-		                        	{
-		                            		exceptionHandler = potentialCallbacks.exceptionHandler;
-		                        	}
-		
-		                        	if(typeof potentialCallbacks.er == 'function') 
-		                        	{
-		                            		errorCallback = potentialCallbacks.er;
-		                        	} 
-		                        	else if(typeof potentialCallbacks.error == 'function') 
-		                        	{
-		                        	    	errorCallback = potentialCallbacks.error;
-		                        	}
-		                    	}
+						var potentialCallbacks = params[params.length-1];
+
+						// For backwards compatibility with Mike's
+						// patch, but support more consistent
+						// callback hook names
+						if(typeof potentialCallbacks.cb == 'function') 
+						{ 
+								successCallback = potentialCallbacks.cb;
+						} 
+						else if( typeof potentialCallbacks.success == 'function') 
+						{
+								successCallback = potentialCallbacks.success;
+						}
+
+						if(typeof potentialCallbacks.ex == 'function') 
+						{
+								exceptionHandler = potentialCallbacks.ex;
+						} 
+						else if(typeof potentialCallbacks.exceptionHandler == 'function') 
+						{
+								exceptionHandler = potentialCallbacks.exceptionHandler;
+						}
+
+						if(typeof potentialCallbacks.er == 'function') 
+						{
+								errorCallback = potentialCallbacks.er;
+						} 
+						else if(typeof potentialCallbacks.error == 'function') 
+						{
+								errorCallback = potentialCallbacks.error;
+						}
+					}
 		                }
 		                
 		                /* We're going to build the request array based upon
@@ -296,77 +296,79 @@ GI.jsonrpc = function(options)
 		            		{
 		            			var err = r.responseText;
 
-		            			alert('done error! :(');
-		                        	self.error = true;
-		                        	self.error_message = stat;
-		                        	self.error_request = req;
-		
-		                        	if(self.options.async) 
-		                        	{
+		            			//alert('done error! :(');
+						self.error = true;
+						self.error_message = stat;
+						self.error_request = req;
+
+						if(self.options.async) 
+						{
 							if(typeof errorCallback  == 'function') 
 							{
-		                                		errorCallback(self,req,stat,err,id,key);
-		                            		}
-		                            
-		                            		self.options.error(self,req,stat,err,id,key);
-		                        	}
-		                        	return;
-		            		}
-		            		
-					//var inp = eval('(' + r.responseText + ')');
-					if (r.responseText)
-					{
-						var inp = JSON.parse( r.responseText  );
+								errorCallback(self,req,stat,err,id,key);
+							}
+							self.options.error(self,req,stat,err,id,key);
+						}
+						return;
 					}
-					else
-					{
-						var inp = null;
-					}
-		
-		            		if((typeof inp.error == 'object') && (inp.error != null)) 
+					else if (r.readyState == 4 && r.status == 200) 
 		            		{
-		                    		reply = new GI.GI_Json_Exception(inp.error);
-						if(typeof exceptionHandler == 'function') 
+		            		
+						//var inp = eval('(' + r.responseText + ')');
+						if (r.responseText)
 						{
-							exceptionHandler(reply);
-							exceptionOcurred = true;
-							return;
+							var inp = JSON.parse( r.responseText  );
+						}
+						else
+						{
+							var inp = { error: null, result: null };
+						}
+
+						if((typeof inp.error == 'object') && (inp.error != null)) 
+						{
+							reply = new GI.GI_Json_Exception(inp.error);
+							if(typeof exceptionHandler == 'function') 
+							{
+								exceptionHandler(reply);
+								exceptionOcurred = true;
+								return;
+							} 
+							else if(typeof self.options.exceptionHandler == 'function') 
+							{
+								self.options.exceptionHandler(reply);
+								exceptionOcurred = true;
+								return;
+							}
 						} 
-						else if(typeof self.options.exceptionHandler == 'function') 
+						else 
 						{
-							self.options.exceptionHandler(reply);
-							exceptionOcurred = true;
-							return;
-		                	        }
-		                    	} 
-		                    	else 
-		                    	{
-			                        reply = inp.result;
-		                    	}
-		
-		                    	if(self.options.async) 
-		                    	{
-			                        if(typeof successCallback == 'function') 
-			                        {
-		                        		if (typeof self.options.postProcessing == 'function')
-		                        		{
-			                        		successCallback(self.options.postProcessing(reply),id,key);
-		                        		}
-		                        		else
-		                        		{	                       
-			                        		successCallback(reply,id,key);
-		                        		}
-		                        	}
-	                        		if (typeof self.options.postProcessing == 'function')
-	                        		{
-	                        			self.options.success(self.options.postProcessing(reply),id,key);
-	                        		}
-	                        		else
-	                        		{
-		                        		self.options.success(reply,id,key);
-	                        		}
-	                        	
-		                    	}
+							reply = inp.result;
+						}
+
+						if(self.options.async) 
+						{
+							if(typeof successCallback == 'function') 
+							{
+								if (typeof self.options.postProcessing == 'function')
+								{
+									successCallback(self.options.postProcessing(reply),id,key);
+								}
+								else
+								{	                       
+									successCallback(reply,id,key);
+								}
+							}
+							if (typeof self.options.postProcessing == 'function')
+							{
+								self.options.success(self.options.postProcessing(reply),id,key);
+							}
+							else
+							{
+								self.options.success(reply,id,key);
+							}
+
+						}
+					}
 		            	};
 		            	r.send(JSON.stringify(tosend));
 		
@@ -414,7 +416,7 @@ GI.jsonrpc = function(options)
 	                	{
 					self[matches[1]] = {};
 				}
-	                    	self[matches[1]][matches[2]] = new_method;
+	                	self[matches[1]][matches[2]] = new_method;
 	                }
 		}
 	
@@ -449,13 +451,13 @@ GI.jsonrpc = function(options)
         			var err = r.responseText;
         			
         			self.error = true;
-                    		self.error_message = stat;
-                    		self.error_request = req;
+				self.error_message = stat;
+				self.error_request = req;
 
-                    		if(self.options.asyncReflect) {
-                        		self.options.reflectError(self,req,stat,err);
-                    		}
-                    		return;
+				if(self.options.asyncReflect) {
+					self.options.reflectError(self,req,stat,err);
+				}
+				return;
         		}
         		else if(r.readyState == 4 && r.status == 200)
         		{
