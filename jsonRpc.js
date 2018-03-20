@@ -2,6 +2,7 @@
  * GI JSON RPC 
  * Grupos Internet Ltda.
  * http://www.gruposinternet.com.br
+ * Update on 2018-03-20
  * 
  * Based On jquery.zend.jsonrpc.js 1.6
  * Copyright (c) 2010 - 2011 Tanabicom, LLC
@@ -323,26 +324,32 @@ GI.jsonrpc = function(options)
 						{
 							var inp = { error: null, result: null };
 						}
-
-						if((typeof inp.error == 'object') && (inp.error != null)) 
+						if (inp)
 						{
-							reply = new GI.GI_Json_Exception(inp.error);
-							if(typeof exceptionHandler == 'function') 
+							if(inp && (typeof inp.error == 'object') && (inp.error != null)) 
 							{
-								exceptionHandler(reply);
-								exceptionOcurred = true;
-								return;
+								reply = new GI.GI_Json_Exception(inp.error);
+								if(typeof exceptionHandler == 'function') 
+								{
+									exceptionHandler(reply);
+									exceptionOcurred = true;
+									return;
+								} 
+								else if(typeof self.options.exceptionHandler == 'function') 
+								{
+									self.options.exceptionHandler(reply);
+									exceptionOcurred = true;
+									return;
+								}
 							} 
-							else if(typeof self.options.exceptionHandler == 'function') 
+							else 
 							{
-								self.options.exceptionHandler(reply);
-								exceptionOcurred = true;
-								return;
+								reply = inp.result;
 							}
-						} 
-						else 
+						}
+						else
 						{
-							reply = inp.result;
+							reply = null;
 						}
 
 						if(self.options.async) 
