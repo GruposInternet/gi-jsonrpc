@@ -444,3 +444,5 @@ GI.jsonrpc = function init(options) {
     return this;
   })(options);
 };
+
+module.exports = { GI };
