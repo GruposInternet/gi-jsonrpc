@@ -1,0 +1,30 @@
+{
+  "name": "gi-jsonrpc",
+  "version": "1.0.0",
+  "description": "JSON Rpc client for Javascript",
+  "main": "jsonRpc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GruposInternet/gi-jsonrpc.git"
+  },
+  "keywords": [
+    "JSON",
+    "RPC"
+  ],
+  "author": "Gian Carlo Salvati",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GruposInternet/gi-jsonrpc/issues"
+  },
+  "homepage": "https://github.com/GruposInternet/gi-jsonrpc#readme",
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.18.2"
+  }
+}
