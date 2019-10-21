@@ -1,6 +1,7 @@
 # GI - JSON Rpc Client
 
-JSON Rpc Client library for Javascript
+JSON Rpc Client library for Javascript.
+
 See: http://json-rpc.org/
 
 You can use Zend_Json_Server as server for your classes: http://framework.zend.com/manual/current/en/modules/zend.json.server.html
@@ -10,30 +11,27 @@ Exemple:
 # Syncronous:
 
 ```javascript
-var service = GI.jsonrpc( { url: '&lt;endpoint url&gt;' });
-var result = service.method(param1, param2);
+const service = GI.jsonrpc({ url: "<endpoint url>" });
+const result = service.method(param1, param2);
 ```
 
 # Asyncronous:
 
 ```javascript
-var service = GI.jsonrpc( { url: '&lt;endpoint url&gt;', async: true });
-service.method(param1, param2, function( result )
-  {
-    console.log(result).
-  }
-);
+const service = GI.jsonrpc({ url: "<endpoint url>", async: true });
+service.method(param1, param2, function(result) {
+  console.log(result);
+});
 ```
 
+# Usage
 
-# USAGE
- 
- ```var json_client = GI.jsonrpc(options)```
- 
-  Returns a json_client object that implements all the methods provided
-  by the GI JSON RPC server.  Options is an object which may contain the
-  following parameters:
- 
+`const json_client = GI.jsonrpc(options)`
+
+Returns a json_client object that implements all the methods provided
+by the GI JSON RPC server. Options is an object which may contain the
+following parameters:
+
  <pre>
   url                  - The URL of the JSON-RPC server.
   smd                  - This is a way to define the available class
@@ -81,19 +79,19 @@ service.method(param1, param2, function( result )
                          the $.ajax call to permit additional HTTP headers.
  </pre>
 
-# SPECIAL NOTES ABOUT ASYNC MODE:
- 
-  If the client is in async mode (async : true, or use setAsync method)  you can pass an additional argument to your methods that contains the an array of success / failure /exception handler callbacks.  For ex:
-  
- ```
-  var json_client = GI.jsonrpc({url:...., async:true });
- 
-  json_client.add(1,2,{success: function() {...},
-                       error:   function() {...},
-                       exceptionHandler: function() { ... }
-  });
- ```
- 
-  These callback methods are called IN ADDITION to the success/error methods if you set them.  These callbacks receive the same variables passsed to them as the default callbacks do.
- 
-  ALSO: Async calls return the 'sequence ID' for the call, which can be matched to the ID passed to success / error handlers. 
+# Special notes about async mode:
+
+If the client is in async mode (async : true, or use setAsync method) you can pass an additional argument to your methods that contains the an array of success / failure /exception handler callbacks. For ex:
+
+```javascript
+ const json_client = GI.jsonrpc({url:...., async:true });
+
+ json_client.add(1,2, {success: function() {...},
+                      error:   function() {...},
+                      exceptionHandler: function() {...}
+ });
+```
+
+These callback methods are called IN ADDITION to the success/error methods if you set them. These callbacks receive the same variables passsed to them as the default callbacks do.
+
+ALSO: Async calls return the 'sequence ID' for the call, which can be matched to the ID passed to success / error handlers.
