@@ -1,9 +1,10 @@
+/* eslint-disable no-restricted-syntax */
 /*
- * GI JSON RPC 
+ * GI JSON RPC
  * Grupos Internet Ltda.
  * http://www.gruposinternet.com.br
  * Update on 2018-03-20
- * 
+ *
  * Based On jquery.zend.jsonrpc.js 1.6
  * Copyright (c) 2010 - 2011 Tanabicom, LLC
  * http://www.tanabi.com
@@ -78,8 +79,8 @@
  *                        If this is NOT set, 'error' object will be returned
  *                        on.  In both cases, error object will be a
  *                        GI.GI_Json_Exception
- * postProcessing		- Function to process results after returns                      
- * preProcessing		- Function to process arguments before method execution
+ * postProcessing       - Function to process results after returns
+ * preProcessing        - Function to process arguments before method execution
  * headers              - A javascript object that is passed straight to
  *                        the $.ajax call to permit additional HTTP headers.
  *
@@ -103,386 +104,343 @@
  * ALSO: Async calls return the 'sequence ID' for the call, which can be
  * matched to the ID passed to success / error handlers.
  */
-if(typeof GI == 'undefined')
-{
-    var GI = { };
+
+let GI;
+
+if (typeof GI === 'undefined') {
+  GI = {};
 }
 /*
  * In case of error, an instance of this class is returned to the caller
  * instead of the actual resulting message.
  */
-GI.GI_Json_Exception = function(data) {
-	this.name = "GI.GI_Json_Exception";
-	this.code = data.code;
-	this.message = (data.message || "");
-	this.data = (data.data || "");
-	
-	this.toString = function() {
-		return "(" + this.code + "): " + this.message;
-	}
-};
-GI.GI_Json_Exception.prototype = new Error;
+GI.GI_Json_Exception = function define(data) {
+  this.name = 'GI.GI_Json_Exception';
+  this.code = data.code;
+  this.message = data.message || '';
+  this.data = data.data || '';
 
-function extend(a, b){
-    for(var key in b)
-        if(b.hasOwnProperty(key))
-            a[key] = b[key];
-    return a;
+  this.toString = function message() {
+    return `(${this.code}): ${this.message}`;
+  };
+};
+
+GI.GI_Json_Exception.prototype = new Error();
+
+function extend(a, b) {
+  const result = a;
+
+  for (const key of Object.keys(b)) {
+    if (Object.prototype.hasOwnProperty.call(b, key)) {
+      result[key] = b[key];
+    }
+  }
+
+  return result;
 }
 
+GI.jsonrpc = function init(options) {
+  /* Create an object that can be used to make JSON RPC calls. */
+  return new (function instance(options) {
+    /* Self reference variable to be used all over the place */
+    const self = this;
 
-GI.jsonrpc = function(options) 
-{
-    	/* Create an object that can be used to make JSON RPC calls. */
-	return new (function(options)
-	{
-        	/* Self reference variable to be used all over the place */
-        	var self = this;
-        
-	        /* Merge selected options in with default options. */
-	        this.options = extend(
-	        	{
-	                url: '',
-	                version: '',
-	                async: false,
-	                success: function() { },
-	                error: function() { },
-	                asyncReflect: false,
-	                asyncSuccess: function() { },
-	                asyncError: function() { },
-	                smd: null,
-	                exceptionHandler: null,
-	                postProcessing: null,
-	                preProcessing: null,
-	                headers: { }
-	        	},
-	        	options
-	        );
-	        /* Keep track of our ID sequence */
-	        this.sequence = 1;
-	        
-	        /* See if we're in an error condition. */
-	        this.error = false;
-	        
-	        // Add method to set async on/off
-	        this.setAsync = function(toggle) {
-	            self.options.async = toggle;
-	            return self;
-	        };
-	
-	        // Add method to set async callbacks
-	        this.setAsyncSuccess = function(callback) {
-	            self.options.success = callback;
-	            return self;
-	        }
-	
-	        this.setAsyncError = function(callback) {
-	            self.options.error = callback;
-	            return self;
-	        }
-	
-	        // A private function for building callbacks.
-	        var buildCallbacks = function(data) 
-	        {        	
-	            	/* Set version if we don't have it yet. */
-			if(!self.options.version)
-			{
-				if(data.envelope == "JSON-RPC-1.0")
-			{
-				self.options.version = 1;
-			}
-			else
-			{
-				self.options.version = 2;
-			}
-		}
-	
-		// Common regexp object
-		var detectNamespace = new RegExp("([^.]+)\\.([^.]+)");
-		
-		function createMethod( key, method )
-		{
-			// Make the method
-		        var new_method = function()
-		        {
-		        	var params = new Array();
-		                for(var i = 0; i < arguments.length; i++)
-		                {
-		                	var obParam = arguments[i];
-		                	if (typeof self.options.preProcessing == 'function')
-		                	{	                		
-		                		params.push(self.options.preProcessing(obParam));
-		                	}
-		                	else
-		                	{
-		                		params.push(obParam);	
-		                	}
-		                }
-		
-		                var id = (self.sequence++);
-		                var reply = [];
-		
-		                var successCallback = false;
-						var exceptionHandler = false;
-		                var errorCallback = false;
-		                var exceptionOcurred = false;
-		
-		                /* If we're doing an async call, handle callbacks
-		                 * if we happen to have them.
-		                 */
-		                if(self.options.async && params.length) 
-		                {
-		                	if(typeof params[params.length-1] == 'object') 
-		                	{
-						var potentialCallbacks = params[params.length-1];
+    /* Merge selected options in with default options. */
+    this.options = extend(
+      {
+        url: '',
+        version: '',
+        async: false,
+        success() {},
+        error() {},
+        asyncReflect: false,
+        asyncSuccess() {},
+        asyncError() {},
+        smd: null,
+        exceptionHandler: null,
+        postProcessing: null,
+        preProcessing: null,
+        headers: {},
+      },
+      options,
+    );
 
-						// For backwards compatibility with Mike's
-						// patch, but support more consistent
-						// callback hook names
-						if(typeof potentialCallbacks.cb == 'function') 
-						{ 
-								successCallback = potentialCallbacks.cb;
-						} 
-						else if( typeof potentialCallbacks.success == 'function') 
-						{
-								successCallback = potentialCallbacks.success;
-						}
+    /* Keep track of our ID sequence */
+    this.sequence = 1;
 
-						if(typeof potentialCallbacks.ex == 'function') 
-						{
-								exceptionHandler = potentialCallbacks.ex;
-						} 
-						else if(typeof potentialCallbacks.exceptionHandler == 'function') 
-						{
-								exceptionHandler = potentialCallbacks.exceptionHandler;
-						}
+    /* See if we're in an error condition. */
+    this.error = false;
 
-						if(typeof potentialCallbacks.er == 'function') 
-						{
-								errorCallback = potentialCallbacks.er;
-						} 
-						else if(typeof potentialCallbacks.error == 'function') 
-						{
-								errorCallback = potentialCallbacks.error;
-						}
-					}
-		                }
-		                
-		                /* We're going to build the request array based upon
-		                 * version.
-		                 */
-		                if(self.options.version == 1)
-		                {
-					var tosend = {method: key,params: params,id: id};
-		                }
-		                else
-		                {
-					var tosend = {jsonrpc: '2.0',method: key,params: params,id: id};
-		                }
-		             
-		                var r = new XMLHttpRequest(); 
-		            	r.open("POST", self.options.url, self.options.asyncReflect);
-		            	r.setRequestHeader("Content-Type", 'application/json');
-		            	for (var headerKey in self.options.headers)
-		            	{
-		            		var headerValue = self.options.headers[headerKey];
-		            		r.setRequestHeader(headerKey, headerValue);
-		            	}
-		            	r.onreadystatechange = function () 
-		            	{
-		            		var stat = r.statusText;
-		            		var req = r;
-		            		 
-		            		if (r.readyState == 4 && r.status != 200) 
-		            		{
-		            			var err = r.responseText;
+    // Add method to set async on/off
+    this.setAsync = (toggle) => {
+      self.options.async = toggle;
+      return self;
+    };
 
-		            			//alert('done error! :(');
-						self.error = true;
-						self.error_message = stat;
-						self.error_request = req;
+    // Add method to set async callbacks
+    this.setAsyncSuccess = (callback) => {
+      self.options.success = callback;
+      return self;
+    };
 
-						if(self.options.async) 
-						{
-							if(typeof errorCallback  == 'function') 
-							{
-								errorCallback(self,req,stat,err,id,key);
-							}
-							self.options.error(self,req,stat,err,id,key);
-						}
-						return;
-					}
-					else if (r.readyState == 4 && r.status == 200) 
-		            		{
-		            		
-						//var inp = eval('(' + r.responseText + ')');
-						if (r.responseText)
-						{
-							var inp = JSON.parse( r.responseText  );
-						}
-						else
-						{
-							var inp = { error: null, result: null };
-						}
-						if (inp)
-						{
-							if(inp && (typeof inp.error == 'object') && (inp.error != null)) 
-							{
-								reply = new GI.GI_Json_Exception(inp.error);
-								if(typeof exceptionHandler == 'function') 
-								{
-									exceptionHandler(reply);
-									exceptionOcurred = true;
-									return;
-								} 
-								else if(typeof self.options.exceptionHandler == 'function') 
-								{
-									self.options.exceptionHandler(reply);
-									exceptionOcurred = true;
-									return;
-								}
-							} 
-							else 
-							{
-								reply = inp.result;
-							}
-						}
-						else
-						{
-							reply = null;
-						}
+    this.setAsyncError = (callback) => {
+      self.options.error = callback;
+      return self;
+    };
 
-						if(self.options.async) 
-						{
-							if(typeof successCallback == 'function') 
-							{
-								if (typeof self.options.postProcessing == 'function')
-								{
-									successCallback(self.options.postProcessing(reply),id,key);
-								}
-								else
-								{	                       
-									successCallback(reply,id,key);
-								}
-							}
-							if (typeof self.options.postProcessing == 'function')
-							{
-								self.options.success(self.options.postProcessing(reply),id,key);
-							}
-							else
-							{
-								self.options.success(reply,id,key);
-							}
-
-						}
-					}
-		            	};
-		            	r.send(JSON.stringify(tosend));
-		
-		                if(self.options.async) 
-		                {
-		                    return id;
-		                }
-		                else 
-		                {
-		                	if (exceptionOcurred)
-		                	{
-						reply = null;
-						throw reply;
-		                	}
-		                	if (typeof self.options.postProcessing == 'function')
-	                    		{
-	                    			return self.options.postProcessing(reply);
-	                    		}
-	                    		else
-	                    		{
-	                    			return reply;
-	                    		}
-		                }
-		 	};
-			return new_method;
-		}
-	            
-	        /* On success, let's build some callback methods. */
-	        for( var key in data.methods)
-	        {
-	            	var val = data.methods[key];
-	            	var new_method = createMethod ( key, val);
-	            	
-	            	
-	                // Are we name spacing or not ?
-	                var matches = detectNamespace.exec(key);
-	
-	                if((!matches) || (!matches.length)) 
-	                {
-	                	self[key] = new_method;
-	                } 
-	                else 
-	                {
-	                	if(!self[matches[1]]) 
-	                	{
-					self[matches[1]] = {};
-				}
-	                	self[matches[1]][matches[2]] = new_method;
-	                }
-		}
-	
-	        if(self.options.asyncReflect) 
-	        {
-			self.options.reflectSuccess(self);
-	        }
-	};
-        
-        //console.log(self);
-
-        /* Do an ajax request to the server and build our object.
-         *
-         * Or process the smd passed.
-         */
-        if(self.options.smd != null)
-        {
-            buildCallbacks(self.options.smd);
-        } 
-        else 
-        {
-        	var r = new XMLHttpRequest(); 
-        	r.open("GET", self.options.url, self.options.asyncReflect);
-        	r.setRequestHeader("Content-Type", 'application/json');
-        	r.onreadystatechange = function () 
-        	{
-        		var stat = r.statusText;
-        		var req = r;
-        		 
-        		if (r.readyState == 4 && r.status != 200) 
-        		{
-        			var err = r.responseText;
-        			
-        			self.error = true;
-				self.error_message = stat;
-				self.error_request = req;
-
-				if(self.options.asyncReflect) {
-					self.options.reflectError(self,req,stat,err);
-				}
-				return;
-        		}
-        		else if(r.readyState == 4 && r.status == 200)
-        		{
-				if (r.responseText)
-				{
-					var respost = JSON.parse( r.responseText  );
-				}
-				else
-				{
-					var respost = null;
-				}
-	        		buildCallbacks( respost );
-        		}        		        		        		
-        	};
-        	r.send();
+    // A private function for building callbacks.
+    const buildCallbacks = (data) => {
+      /* Set version if we don't have it yet. */
+      if (!self.options.version) {
+        if (data.envelope === 'JSON-RPC-1.0') {
+          self.options.version = 1;
+        } else {
+          self.options.version = 2;
         }
+      }
 
-        return this;
-	}
-	)(options);
+      // Common regexp object
+      const detectNamespace = new RegExp('([^.]+)\\.([^.]+)');
+
+      function createMethod(key, method, ...args) {
+        // Make the method
+        const newMethod = () => {
+          const params = [];
+
+          for (let i = 0; i < args.length; i += 1) {
+            const obParam = args[i];
+
+            if (typeof self.options.preProcessing === 'function') {
+              params.push(self.options.preProcessing(obParam));
+            } else {
+              params.push(obParam);
+            }
+          }
+
+          const id = self.sequence + 1;
+          let reply = [];
+
+          let successCallback = false;
+          let exceptionHandler = false;
+          let errorCallback = false;
+          let exceptionOcurred = false;
+
+          /* If we're doing an async call, handle callbacks
+           * if we happen to have them.
+           */
+          if (self.options.async && params.length) {
+            if (typeof params[params.length - 1] === 'object') {
+              const potentialCallbacks = params[params.length - 1];
+
+              // For backwards compatibility with Mike's
+              // patch, but support more consistent
+              // callback hook names
+              if (typeof potentialCallbacks.cb === 'function') {
+                successCallback = potentialCallbacks.cb;
+              } else if (typeof potentialCallbacks.success === 'function') {
+                successCallback = potentialCallbacks.success;
+              }
+
+              if (typeof potentialCallbacks.ex === 'function') {
+                exceptionHandler = potentialCallbacks.ex;
+              } else if (
+                typeof potentialCallbacks.exceptionHandler === 'function'
+              ) {
+                exceptionHandler = potentialCallbacks.exceptionHandler;
+              }
+
+              if (typeof potentialCallbacks.er === 'function') {
+                errorCallback = potentialCallbacks.er;
+              } else if (typeof potentialCallbacks.error === 'function') {
+                errorCallback = potentialCallbacks.error;
+              }
+            }
+          }
+
+          /* We're going to build the request array based upon
+           * version.
+           */
+          let toSend;
+
+          if (self.options.version === 1) {
+            toSend = { method: key, params, id };
+          } else {
+            toSend = {
+              jsonrpc: '2.0',
+              method: key,
+              params,
+              id,
+            };
+          }
+
+          const r = new XMLHttpRequest();
+          r.open('POST', self.options.url, self.options.asyncReflect);
+          r.setRequestHeader('Content-Type', 'application/json');
+
+          for (const headerKey of Object.keys(self.options.headers)) {
+            const headerValue = self.options.headers[headerKey];
+            r.setRequestHeader(headerKey, headerValue);
+          }
+
+          r.onreadystatechange = () => {
+            const stat = r.statusText;
+            const req = r;
+
+            if (r.readyState === 4 && r.status !== 200) {
+              const err = r.responseText;
+
+              self.error = true;
+              self.error_message = stat;
+              self.error_request = req;
+
+              if (self.options.async) {
+                if (typeof errorCallback === 'function') {
+                  errorCallback(self, req, stat, err, id, key);
+                }
+                self.options.error(self, req, stat, err, id, key);
+              }
+              return;
+            }
+            if (r.readyState === 4 && r.status === 200) {
+              let inp;
+
+              if (r.responseText) {
+                inp = JSON.parse(r.responseText);
+              } else {
+                inp = { error: null, result: null };
+              }
+
+              if (inp) {
+                if (inp && typeof inp.error === 'object' && inp.error != null) {
+                  reply = new GI.GI_Json_Exception(inp.error);
+
+                  if (typeof exceptionHandler === 'function') {
+                    exceptionHandler(reply);
+                    exceptionOcurred = true;
+                    return;
+                  }
+
+                  if (typeof self.options.exceptionHandler === 'function') {
+                    self.options.exceptionHandler(reply);
+                    exceptionOcurred = true;
+                    return;
+                  }
+                } else {
+                  reply = inp.result;
+                }
+              } else {
+                reply = null;
+              }
+
+              if (self.options.async) {
+                if (typeof successCallback === 'function') {
+                  if (typeof self.options.postProcessing === 'function') {
+                    successCallback(
+                      self.options.postProcessing(reply),
+                      id,
+                      key,
+                    );
+                  } else {
+                    successCallback(reply, id, key);
+                  }
+                }
+                if (typeof self.options.postProcessing === 'function') {
+                  self.options.success(
+                    self.options.postProcessing(reply),
+                    id,
+                    key,
+                  );
+                } else {
+                  self.options.success(reply, id, key);
+                }
+              }
+            }
+          };
+
+          r.send(JSON.stringify(toSend));
+
+          if (self.options.async) {
+            return id;
+          }
+
+          if (exceptionOcurred) {
+            reply = null;
+            throw reply;
+          }
+          if (typeof self.options.postProcessing === 'function') {
+            return self.options.postProcessing(reply);
+          }
+
+          return reply;
+        };
+
+        return newMethod;
+      }
+
+      /* On success, let's build some callback methods. */
+      for (const key of Object.keys(data.methods)) {
+        const value = data.methods[key];
+        const newMethod = createMethod(key, value);
+
+        // Are we name spacing or not ?
+        const matches = detectNamespace.exec(key);
+
+        if (!matches || !matches.length) {
+          self[key] = newMethod;
+        } else {
+          if (!self[matches[1]]) {
+            self[matches[1]] = {};
+          }
+          self[matches[1]][matches[2]] = newMethod;
+        }
+      }
+
+      if (self.options.asyncReflect) {
+        self.options.reflectSuccess(self);
+      }
+    };
+
+    /* Do an ajax request to the server and build our object.
+     *
+     * Or process the smd passed.
+     */
+    if (self.options.smd !== null) {
+      buildCallbacks(self.options.smd);
+    } else {
+      const r = new XMLHttpRequest();
+      r.open('GET', self.options.url, self.options.asyncReflect);
+      r.setRequestHeader('Content-Type', 'application/json');
+
+      r.onreadystatechange = () => {
+        const stat = r.statusText;
+        const req = r;
+
+        if (r.readyState === 4 && r.status !== 200) {
+          const err = r.responseText;
+
+          self.error = true;
+          self.error_message = stat;
+          self.error_request = req;
+
+          if (self.options.asyncReflect) {
+            self.options.reflectError(self, req, stat, err);
+          }
+        } else if (r.readyState === 4 && r.status === 200) {
+          let response;
+
+          if (r.responseText) {
+            response = JSON.parse(r.responseText);
+          } else {
+            response = null;
+          }
+
+          buildCallbacks(response);
+        }
+      };
+
+      r.send();
+    }
+
+    return this;
+  })(options);
 };
