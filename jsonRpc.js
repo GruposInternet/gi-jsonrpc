@@ -202,13 +202,13 @@ GI.jsonrpc = function init(options) {
       // Common regexp object
       const detectNamespace = new RegExp('([^.]+)\\.([^.]+)');
 
-      function createMethod(key, method, ...args) {
+      function createMethod(key, method) {
         // Make the method
-        const newMethod = () => {
+        const newMethod = function create() {
           const params = [];
 
-          for (let i = 0; i < args.length; i += 1) {
-            const obParam = args[i];
+          for (let i = 0; i < arguments.length; i += 1) {
+            const obParam = arguments[i];
 
             if (typeof self.options.preProcessing === 'function') {
               params.push(self.options.preProcessing(obParam));
