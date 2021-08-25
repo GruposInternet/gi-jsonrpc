@@ -107,6 +107,10 @@
 
 let GI;
 
+if (typeof XMLHttpRequest === 'undefined') {
+  XMLHttpRequest = require("xhr2");
+}
+
 if (typeof GI === 'undefined') {
   GI = {};
 }
