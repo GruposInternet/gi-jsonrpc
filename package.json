@@ -1,6 +1,5 @@
 {
   "_from": "gi-jsonrpc@^1.0.6",
-  "_id": "gi-jsonrpc@1.0.6",
   "_inBundle": false,
   "_integrity": "sha512-g5fVF3LIATedBuafvAEGlKCPY2px5ygk1QRIK4bOdAOQ7OzTGXctLUwWSRBgiL6qctviRA24J6c83GrDVjsrnA==",
   "_location": "/gi-jsonrpc",
@@ -56,5 +55,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "1.0.6"
+  "version": "1.1.0"
 }
