@@ -1,0 +1,60 @@
+{
+  "_from": "gi-jsonrpc@^1.0.6",
+  "_id": "gi-jsonrpc@1.0.6",
+  "_inBundle": false,
+  "_integrity": "sha512-g5fVF3LIATedBuafvAEGlKCPY2px5ygk1QRIK4bOdAOQ7OzTGXctLUwWSRBgiL6qctviRA24J6c83GrDVjsrnA==",
+  "_location": "/gi-jsonrpc",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "gi-jsonrpc@^1.0.6",
+    "name": "gi-jsonrpc",
+    "escapedName": "gi-jsonrpc",
+    "rawSpec": "^1.0.6",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.6"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/gi-jsonrpc/-/gi-jsonrpc-1.0.6.tgz",
+  "_shasum": "d4a77d9eab69ea2c8a17f4ea48d6bb7d906f4448",
+  "_spec": "gi-jsonrpc@^1.0.6",
+  "_where": "/gruposlocal/www/htdocs/enturma/ens",
+  "author": {
+    "name": "Gian Carlo Salvati"
+  },
+  "bugs": {
+    "url": "https://github.com/GruposInternet/gi-jsonrpc/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "JSON Rpc client for Javascript",
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.18.2"
+  },
+  "homepage": "https://github.com/GruposInternet/gi-jsonrpc#readme",
+  "keywords": [
+    "JSON",
+    "RPC"
+  ],
+  "license": "MIT",
+  "main": "jsonRpc.js",
+  "name": "gi-jsonrpc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GruposInternet/gi-jsonrpc.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.6"
+}
