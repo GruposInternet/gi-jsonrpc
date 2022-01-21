@@ -283,8 +283,6 @@ GI.jsonrpc = function(options)
 		             
 		                var r = new XMLHttpRequest(); 
 		            	r.open("POST", self.options.url, self.options.asyncReflect);
-				if (self.options.credentials)
-        				r.withCredentials = true;
 		            	r.setRequestHeader("Content-Type", 'application/json');
 				if (typeof self.options.withCredentials  != 'undefined' && withCredentials)
 				{
@@ -453,9 +451,7 @@ GI.jsonrpc = function(options)
         else 
         {
         	var r = new XMLHttpRequest(); 
-        	r.open("GET", self.options.url, self.options.asyncReflect);
-		if (self.options.credentials)
-        		r.withCredentials = true;
+        	r.open("GET", self.options.url, self.options.asyncReflect);		
         	r.setRequestHeader("Content-Type", 'application/json');
         	if (typeof self.options.withCredentials  != 'undefined' && withCredentials)
 		{
