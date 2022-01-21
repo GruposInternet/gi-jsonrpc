@@ -154,8 +154,7 @@ GI.jsonrpc = function(options)
 	                exceptionHandler: null,
 	                postProcessing: null,
 	                preProcessing: null,
-	                headers: { },
-			credentials: false
+	                headers: { }
 	        	},
 	        	options
 	        );
