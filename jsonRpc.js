@@ -276,9 +276,9 @@ GI.jsonrpc = function init(options) {
           const r = new XMLHttpRequest();
           r.open('POST', self.options.url, self.options.asyncReflect);
 		  if (typeof self.options.withCredentials  != 'undefined' && withCredentials)
-		{
+		  {
 			r.withCredentials = true;
-		}
+		  }
           r.setRequestHeader('Content-Type', 'application/json');
 
           for (const headerKey of Object.keys(self.options.headers)) {
